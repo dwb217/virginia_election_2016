@@ -19,7 +19,7 @@ app.title='VA 2016'
 
 ####### Layout of the app ########
 app.layout = html.Div([
-    html.H3('2016 Presidential Election: Vote Totals by Jurisdiction'),
+    html.H3('2016 Presidential Election: Vote Totals by jurisdiction'),
     dcc.Dropdown(
         id='dropdown',
         options=[{'label': i, 'value': i} for i in options_list],
@@ -61,6 +61,23 @@ def juris_picker(juris_name):
     fig = go.Figure(data=[mydata1, mydata2, mydata3], layout=mylayout)
     return fig
 
+
+@app.callback(dash.dependencies.Output('display-value', 'figure'),
+              [dash.dependencies.Input('dropdown', 'value')])
+fig = go.Figure(data=go.Choropleth(
+    locations=df['jurisdiction'], # Spatial coordinates
+    z = df[votes].astype(float), # Data to be color-coded
+    locationmode = 'USA-counties', # set of locations match entries in `locations`
+    colorscale = mycolorscale,
+    colorbar_title = mycolorbartitle,
+))
+
+fig.update_layout(
+    title_text = mygraphtitle,
+    geo_scope='virginia',
+    width=1200,
+    height=800
+)
 
 ######### Run the app #########
 if __name__ == '__main__':
