@@ -62,22 +62,25 @@ def juris_picker(juris_name):
     return fig
 
 
-@app.callback(dash.dependencies.Output('display-value', 'figure'),
+@app.callback(dash.dependencies.Output('display-map', 'figure'),
               [dash.dependencies.Input('dropdown', 'value')])
-fig = go.Figure(data=go.Choropleth(
-    locations=df['jurisdiction'], # Spatial coordinates
-    z = df[votes].astype(float), # Data to be color-coded
-    locationmode = 'USA-counties', # set of locations match entries in `locations`
-    colorscale = mycolorscale,
-    colorbar_title = mycolorbartitle,
-))
-
-fig.update_layout(
-    title_text = mygraphtitle,
-    geo_scope='virginia',
-    width=1200,
-    height=800
-)
+def juris_highlighter(juris_name):
+    df['selected']=np.where(df['jurisdiction']==juris_name, 1, 0)
+    fig = go.Figure(go.Choroplethmapbox(geojson=counties,
+                                        locations=df['FIPS'],
+                                        z=df['selected'],
+                                        # colorscale=['blues'],
+                                        text=df['county_name'],
+                                        hoverinfo='text',
+                                        zmin=0,
+                                        zmax=1,
+                                        marker_line_width=.5
+                                        ))
+    fig.update_layout(mapbox_style="carto-positron",
+                      mapbox_zoom=5.8,
+                      mapbox_center = {"lat": 38.0293, "lon": -79.4428})
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+    return fig
 
 ######### Run the app #########
 if __name__ == '__main__':
