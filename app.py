@@ -45,7 +45,7 @@ def juris_highlighter(juris_name):
                                         locations=df['FIPS'],
                                         z=df['selected'],
                                         # colorscale=['blues'],
-                                        text=df['county_name'],
+                                        text=df['jurisdiction'],
                                         hoverinfo='text',
                                         zmin=0,
                                         zmax=1,
